@@ -1,0 +1,7 @@
+venv
+.env
+__pycache__
+flashcards.db
+combined_code.txt
+combine.sh
+audio_cache

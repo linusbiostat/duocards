@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Duocards - Learn Slovene</title>
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="/static/selection-tooltip.css">
+</head>
+
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="logo">🃏 Duocards</h1>
+            <button id="menuBtn" class="icon-btn" aria-label="Menu">☰</button>
+        </header>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat">
+                <span class="stat-value" id="statNew">0</span>
+                <span class="stat-label">New</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value" id="statDue">0</span>
+                <span class="stat-label">Due</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value" id="statTotal">0</span>
+                <span class="stat-label">Total</span>
+            </div>
+        </div>
+
+        <!-- Card Stack Container -->
+        <div class="card-stack" id="cardStack">
+            <!-- Cards will be inserted here dynamically -->
+            <div class="empty-state" id="emptyState">
+                <div class="empty-icon">🎉</div>
+                <h2>All done!</h2>
+                <p>No cards due for review</p>
+                <button class="btn btn-primary" id="addCardBtnEmpty">+ Add New Card</button>
+            </div>
+        </div>
+
+        <!-- Review Buttons -->
+        <div class="review-buttons" id="reviewButtons">
+            <button class="review-btn again" data-quality="1" title="Again">
+                <span class="btn-icon">✗</span>
+                <span class="btn-text">Again</span>
+            </button>
+            <button class="review-btn hard" data-quality="3" title="Hard">
+                <span class="btn-icon">😓</span>
+                <span class="btn-text">Hard</span>
+            </button>
+            <button class="review-btn good" data-quality="4" title="Good">
+                <span class="btn-icon">👍</span>
+                <span class="btn-text">Good</span>
+            </button>
+            <button class="review-btn easy" data-quality="5" title="Easy">
+                <span class="btn-icon">⚡</span>
+                <span class="btn-text">Easy</span>
+            </button>
+        </div>
+
+        <!-- Browse All View -->
+        <div class="browse-view hidden" id="browseView">
+            <div class="browse-header">
+                <input type="text" class="search-input" id="searchInput" placeholder="🔍 Search cards...">
+            </div>
+            <div class="card-list" id="cardList">
+                <!-- Cards will be rendered here -->
+            </div>
+        </div>
+
+        <!-- Statistics View -->
+        <div class="stats-view hidden" id="statsView">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-card-icon">📚</div>
+                    <div class="stat-card-value" id="statsTotal">0</div>
+                    <div class="stat-card-label">Total Cards</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon">🆕</div>
+                    <div class="stat-card-value" id="statsNew">0</div>
+                    <div class="stat-card-label">New Cards</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon">📖</div>
+                    <div class="stat-card-value" id="statsLearning">0</div>
+                    <div class="stat-card-label">Learning</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon">✅</div>
+                    <div class="stat-card-value" id="statsMature">0</div>
+                    <div class="stat-card-label">Mature</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon">⏰</div>
+                    <div class="stat-card-value" id="statsDue">0</div>
+                    <div class="stat-card-label">Due Today</div>
+                </div>
+            </div>
+            <div class="stats-info">
+                <h3>Learning Progress</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+                <p class="progress-text" id="progressText">0% mastered</p>
+            </div>
+        </div>
+
+        <!-- Floating Action Button -->
+        <button class="fab" id="addCardBtn" aria-label="Add new card">+</button>
+
+        <!-- Add Card View (Duocards Style) -->
+        <div class="add-card-view hidden" id="addCardView">
+            <div class="add-card-header">
+                <button class="back-btn" id="closeAddCard">‹</button>
+                <div class="add-card-icon">📝</div>
+                <div class="lang-selector">🇸🇮 ▼</div>
+            </div>
+
+            <div class="add-card-form">
+                <!-- Slowenisch Input -->
+                <div class="form-field">
+                    <label class="field-label">Slowenisch</label>
+                    <div class="field-row">
+                        <input type="text" id="wordInput" class="field-input" placeholder="Wort eingeben...">
+                        <button class="translate-btn" id="generateBtn" title="Generieren">
+                            <span class="translate-icon">⬇</span> Importieren
+                        </button>
+                        <button class="translate-action" id="translateSlWord" title="Übersetzen">文A</button>
+                        <button class="tts-btn" id="ttsSlWord" title="Vorlesen">🔊</button>
+                    </div>
+                </div>
+
+                <!-- Deutsch Input -->
+                <div class="form-field">
+                    <label class="field-label highlight">Deutsch</label>
+                    <div class="field-row">
+                        <input type="text" id="translationInput" class="field-input" placeholder="Übersetzung...">
+                        <button class="translate-action" id="translateDeWord" title="Übersetzen">文A</button>
+                    </div>
+                </div>
+
+                <!-- Beispielsatz Input with Pills -->
+                <div class="form-field">
+                    <label class="field-label">Anwendungsbeispiel (Slowenisch)</label>
+                    <div class="field-row">
+                        <input type="text" id="exampleInput" class="field-input"
+                            placeholder="Beispielsatz auswählen oder eingeben...">
+                        <button class="tts-btn" id="ttsExample" title="Vorlesen">🔊</button>
+                    </div>
+                    <div class="example-pills" id="examplePills">
+                        <!-- Example sentence pills will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- Grammar & Examples Toggle -->
+                <button class="grammar-toggle" id="grammarToggle">
+                    <span class="toggle-icon">✨</span>
+                    <span>Beispiele und Grammatik</span>
+                </button>
+
+                <!-- Save Button -->
+                <button class="save-btn" id="saveCardBtn">SPEICHERN</button>
+            </div>
+
+            <!-- Grammar & Dictionary Section (expandable) -->
+            <div class="dictionary-section hidden" id="dictionarySection">
+                <div class="dict-header">
+                    <h3 id="dictTitle">Bedeutung von ""</h3>
+                    <div class="dict-flags">🇬🇧 🇸🇮</div>
+                </div>
+
+                <p class="dict-meaning" id="dictMeaning"></p>
+
+                <div class="dict-grammar" id="dictGrammar">
+                    <h4>Grammatik</h4>
+                    <pre id="grammarContent"></pre>
+                </div>
+
+                <div class="dict-synonyms" id="dictSynonyms">
+                    <h4>Synonyme</h4>
+                    <ul id="synonymsList"></ul>
+                </div>
+
+                <div class="dict-usage" id="dictUsage">
+                    <h4>Verwendung</h4>
+                    <p id="usageContent"></p>
+                </div>
+
+                <div class="dict-examples" id="dictExamples">
+                    <h4>Beispiele</h4>
+                    <div id="examplesWithAudio"></div>
+                </div>
+
+                <p class="dict-disclaimer">
+                    Dies ist eine Beta-Version der KI-generierten Grammatik.
+                    <a href="#">Schlechte Qualität melden</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Menu Sidebar -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        <aside class="sidebar" id="sidebar">
+            <nav class="sidebar-nav">
+                <a href="#" class="sidebar-link active" data-view="review">📚 Review</a>
+                <a href="#" class="sidebar-link" data-view="browse">🔍 Browse All</a>
+                <a href="#" class="sidebar-link" data-view="stats">📊 Statistics</a>
+            </nav>
+        </aside>
+
+        <!-- Selection Tooltip -->
+        <div class="selection-tooltip" id="selectionTooltip">
+            <button class="tooltip-close" id="tooltipClose">×</button>
+            <div class="tooltip-selected-text" id="tooltipSelectedText"></div>
+            <div class="tooltip-lang-indicator" id="tooltipLangIndicator"></div>
+            <div class="tooltip-translation">
+                <span id="tooltipTranslationText"></span>
+                <button class="tooltip-audio-btn" id="tooltipAudioBtn" title="Vorlesen">🔊</button>
+            </div>
+            <div class="tooltip-error" id="tooltipError" style="display: none;"></div>
+            <div class="tooltip-actions">
+                <button class="tooltip-add-card-btn" id="tooltipAddCard">
+                    + Karte erstellen
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="cardDetailsModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeCardDetails()">&times;</span>
+            <div id="modalCardContent">
+                <!-- Data will be injected here -->
+            </div>
+            <h3>Trial History</h3>
+            <div id="heatmapContainer" class="heatmap-container">
+                <!-- Heatmap squares -->
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+
+</html>

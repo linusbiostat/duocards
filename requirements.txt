@@ -1,0 +1,9 @@
+# Duocards Dependencies
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+sqlalchemy>=2.0.0
+pydantic>=2.0.0
+python-dotenv>=1.0.0
+requests>=2.31.0
+botasaurus-driver>=1.0.0
+botasaurus-requests>=1.0.0
